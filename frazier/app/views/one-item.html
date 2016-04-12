@@ -1,0 +1,25 @@
+
+<section data-ng-init="itemCtrl.initialize()">
+  
+  <ul data-ng-show="!itemCtrl.editItemFormVisible">
+    <li>Name: <span data-ng-bind="item.name"></span></li>
+    <li data-ng-show="item.description">Description: <span data-ng-bind="item.description"></span></li>
+    <li data-ng-show="item.creationDate">Created At: <span data-ng-bind="item.creationDate"></span></li>
+    <li data-ng-show="item.complete">Completion Status: <span data-ng-bind="item.complete"></span></li>  
+  </ul>
+  
+  <form class="edit-item css-form" ng-show="itemCtrl.editItemFormVisible" novalidate>
+    <input type="text" name="name"        placeholder="Name "         data-ng-model="itemCtrl.itemCopy.name" />
+    <input type="text" name="description" placeholder="Description "  data-ng-model="itemCtrl.itemCopy.description" />
+    Due date: <input type="date"      name="dueDate"  data-ng-model="itemCopy.dueDate" />
+    Complete: <input type="checkbox"  name="complete" data-ng-model="itemCopy.complete" value="complete" />
+    <span class="error-message" data-ng-show="editItemError" data-ng-bind="editItemError"></span>
+  </form>
+  <button type="button" name="deleteItem" data-ng-click="itemCtrl.deleteItemFormHandler()" data-ng-show="itemCtrl.editItemFormVisible" data-ng-bind="deleteItemButtonText"></button>
+  <button type="button" name="saveItem"   data-ng-click="itemCtrl.editItemFormHandler()"   data-ng-show="itemCtrl.editItemFormVisible">Save</button>
+  <button type="button" name="editList"   data-ng-click="itemCtrl.toggleEditItemFormVisible()" data-ng-bind="editItemButtonText"></button>
+  
+</section>
+
+  
+  

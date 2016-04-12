@@ -1,0 +1,41 @@
+<section data-ng-controller="EditListController as editCtrl" data-ng-init="loadListToEdit()">
+  
+  <button type="button" name="back" data-ng-click="editCtrl.back()">Back to lists</button>
+  
+  <h1 data-ng-bind="vm.result.name"></h1>
+  <h3 data-ng-bind="vm.result.description"></h3>
+  
+  <ul>
+    
+    <li data-ng-repeat="item in editCtrl.list">
+      <list-item item="item"></list-item>
+    </li>
+    
+    <li>
+      <form class="add-item css-form" ng-show="editCtrl.addItemFormVisible" novalidate>
+        <input type="text"  name="name"         placeholder="Name: "        data-ng-model="editCtrl.addItemName" required />
+        <input type="text"  name="description"  placeholder="Description: " data-ng-model="editCtrl.addItemDescription" />
+        Due date: <input type="date"      name="dueDate"  data-ng-model="editCtrl.addItemDueDate" />
+        Complete: <input type="checkbox"  name="complete" data-ng-model="editCtrl.addItemComplete" value="complete" />
+        <span class="error-message" data-ng-show="editCtrl.postItemError" data-ng-bind="editCtrl.postItemError"></span>
+      </form>
+      <button type="button" data-ng-click="editCtrl.addItemFormHandler()" data-ng-show="editCtrl.addItemFormVisible">Save</button>
+      <button type="button" data-ng-click="editCtrl.toggleAddItemFormVisible()" data-ng-bind="editCtrl.addItemButtonText"></button>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <form class="edit-list css-form" data-ng-show="editCtrl.editListFormVisible" novalidate>
+    <input type="text" name="name"        placeholder="Name: "         data-ng-model="editCtrl.listCopy.name" />
+    <input type="text" name="description" placeholder="Description: "  data-ng-model="editCtrl.listCopy.description" />
+    <span class="error-message" data-ng-show="editCtrl.editListError" data-ng-bind="editCtrl.editListError"></span>
+  </form>
+  <button type="button" name="deleteList" data-ng-click="editCtrl.deleteListFormHandler()" data-ng-show="editCtrl.editListFormVisible" ng-bind="editCtrl.deleteListButtonText"></button>
+  <button type="button" name="saveList"   data-ng-click="editCtrl.editListFormHandler()"   data-ng-show="editCtrl.editListFormVisible">Save</button>
+  <button type="button" name="editList"   data-ng-click="editCtrl.toggleEditListFormVisible()" data-ng-bind="editCtrl.editListButtonText"></button>
+  
+</section>
+  
+  

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html data-ng-app="app">
+  
+  <head>
+    <meta charset="utf-8">
+    <title>Todo Lists</title>
+    <link rel="stylesheet" href="style.css" charset="utf-8">
+  </head>
+  
+  <body>
+    
+    <main data-ng-init="initialize()" data-ng-controller="MainController as ctrl">
+      
+      Test: {{ 1 + 1 }}
+      <p data-ng-bind="ctrl.test"></p>
+      
+      <ng-include src="ctrl.section"></ng-include>
+      
+    </main>
+    
+    <script type="text/javascript" src="bundle.js"></script>
+    
+  </body>
+  
+  
+</html>
