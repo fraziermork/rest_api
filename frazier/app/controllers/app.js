@@ -409,7 +409,19 @@ let app = angular.module('app', []);
       }
     }
     function editItemFormHandler() {
-      $http.put('http:localhost:3000/items/' + $scope.item._id)
+      let postObj = {};
+      postObj.name = vm.itemCopy.name;
+      if(vm.itemCopy.description) {
+        postObj.name = vm.itemCopy.description;
+      }
+      if(vm.itemCopy.dueDate) {
+        postObj.name = vm.itemCopy.dueDate;
+      }
+      if(vm.itemCopy.complete) {
+        postObj.name = vm.itemCopy.complete;
+      }
+
+      $http.put('http://localhost:3000/items/' + $scope.item._id, postObj)
         .then(function(result) {
           vm.editItemFormVisible = false;
           $log.log(result.data);
@@ -438,7 +450,7 @@ let app = angular.module('app', []);
     }
     function deleteItem() {
       vm.deleteItemButtonText = 'Delete.';
-      $http.delete('http:localhost:3000/items/' + $scope.item._id)
+      $http.delete('http://localhost:3000/items/' + $scope.item._id)
         .then(function(result) {
           vm.editItemFormVisible = false;
           $scope.initialize();
