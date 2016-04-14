@@ -237,7 +237,7 @@ let app = angular.module('app', []);
     vm.toggleEditListFormVisible  = toggleEditListFormVisible;
     vm.editListFormHandler        = editListFormHandler;
     vm.deleteListFormHandler      = deleteListFormHandler;
-    
+    vm.updateListAfterPut         = updateListAfterPut;
     
     
     
@@ -283,10 +283,17 @@ let app = angular.module('app', []);
       $http.put('http://localhost:3000/lists/' + vm.result._id, postObj)
         .then(function(result) {
           vm.editListFormVisible = false;
-          //TODO: figure out how to update thingy
+          vm.updateListAfterPut();
         }, function(err) {
           $log.log('Error editing this list ', err);
         });
+    }
+    function updateListAfterPut(){
+      self.list.name = vm.listCopy.name;
+      if(vm.listCopy.description) {
+        self.list.description = vm.listCopy.description;
+      }
+      vm.updateListCopy();
     }
     function deleteListFormHandler(){
       if(vm.deleteListButtonText === 'Click again to confirm list deletion.') {
@@ -343,7 +350,7 @@ let app = angular.module('app', []);
           vm.addItemFormVisible = false;
           vm.addItemButtonText = 'Add an item to this list.';
           vm.resetNewItemInfo();
-          //TODO: get it to add this item into thingy
+          vm.loadListToEdit(); //can't be done locally with cacheing, because if they want to edit the item afterwards, we need to have the database id of the item
         }, function(err) {
           $log.log('Error posting this item ', err);
         });
@@ -398,6 +405,7 @@ let app = angular.module('app', []);
     //attach methods to the scope
     vm.initialize                 = initialize;
     vm.toggleEditItemFormVisible  = toggleEditItemFormVisible;
+    vm.updateLocalItemAfterPut    = updateLocalItemAfterPut;
     vm.editItemFormHandler        = editItemFormHandler;
     vm.deleteItemFormHandler      = deleteItemFormHandler;
     //text of buttons whose text changes
@@ -443,11 +451,24 @@ let app = angular.module('app', []);
           vm.editItemFormVisible = false;
           $log.log(result.data);
           $scope.item = result.data;
-          //TODO: do stuff locally
+          vm.updateLocalItemAfterPut();
         }, function(err) {
           $log.log('Error updating item: ', err);
         });
     }
+    function updateLocalItemAfterPut (){
+      $scope.item.name = vm.itemCopy.name;
+      if(vm.itemCopy.description) {
+        $scope.item.description = vm.itemCopy.description;
+      }
+      if(vm.itemCopy.dueDate) {
+        $scope.item.dueDate = vm.itemCopy.dueDate;
+      }
+      if(vm.itemCopy.complete) {
+        $scope.item.complete = vm.itemCopy.complete;
+      }
+    }
+    
     
     function deleteItemFormHandler() {
       if(vm.deleteItemButtonText === 'Click again to confirm item deletion.') {
@@ -464,12 +485,18 @@ let app = angular.module('app', []);
       $http.delete('http://localhost:3000/items/' + $scope.item._id)
         .then(function(result) {
           vm.editItemFormVisible = false;
-          //TODO: do stuff locally not with api call
+          $scope.item = null; //will this work?
+          //do stuff locally not with api call
         }, function(err) {
           $log.log('Error deleting item: ', err);
         });
     }
     
+    
   }
+  
+  
+  
+  
   
 })();
