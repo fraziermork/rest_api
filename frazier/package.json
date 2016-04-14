@@ -9,7 +9,10 @@
   "scripts": {
     "initialize": "mongod -dbpath=./db/ --smallfiles",
     "watch-app": "gulp watch-app",
-    "api-start": "nodemon server.js"
+    "api-start": "nodemon server.js", 
+    "api-test": "gulp test:api",
+    "unit-test": "gulp rebuild:tests; karma start",
+    "e2e-test": "gulp rebuild:tests; protractor protractor-config.js"
   },
   "repository": {
     "type": "git",
@@ -22,16 +25,26 @@
   },
   "homepage": "https://github.com/fraziermork/rest_api#readme",
   "devDependencies": {
+    "angular-mocks": "^1.5.3",
     "chai": "^3.5.0",
     "chai-http": "^2.0.1",
     "del": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
+    "gulp-karma": "0.0.5",
     "gulp-mocha": "^2.2.0",
+    "gulp-protractor": "^2.3.0",
     "gulp-webpack": "^1.5.0",
+    "jasmine": "^2.4.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^0.2.3",
+    "karma-jasmine": "^0.3.8",
     "nodemon": "^1.9.1",
+    "protractor": "^3.2.2",
     "superagent": "^1.8.3",
-    "webpack": "^1.12.14"
+    "webpack": "^1.12.14",
+    "webpack-stream": "^3.1.0"
   },
   "dependencies": {
     "angular": "^1.5.3",

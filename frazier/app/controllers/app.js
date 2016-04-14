@@ -164,6 +164,10 @@ let app = angular.module('app', []);
       }
     }
     
+    
+    //__________________________________________________________________
+    //ADD LIST METHODS
+    //__________________________________________________________________
     function addListFormHandler() {
       // $log.log('addListFormHandler');
       let postObj = {name: vm.addListName, description: vm.addListDescription};
@@ -215,14 +219,6 @@ let app = angular.module('app', []);
     vm.list                       = null;
     vm.listCopy                   = null;
     vm.editListError              = null;
-    //Methods I'm attaching to the controller
-    $scope.loadListToEdit             = loadListToEdit;
-    vm.updateListCopy             = updateListCopy;
-    vm.toggleAddItemFormVisible   = toggleAddItemFormVisible;
-    vm.addItemFormHandler         = addItemFormHandler;
-    vm.toggleEditListFormVisible  = toggleEditListFormVisible;
-    vm.editListFormHandler        = editListFormHandler;
-    vm.deleteListFormHandler      = deleteListFormHandler;
     //Button text for buttons whose text will change 
     vm.addItemButtonText          = 'Add an item to this list.';
     vm.editListButtonText         = 'Edit or delete this list.';
@@ -231,8 +227,16 @@ let app = angular.module('app', []);
     vm.addItemName                = null;
     vm.addItemDescription         = null;
     vm.addItemDueDate             = null;
-    vm.addItemComplete            = null;
-    
+    vm.addItemComplete            = false;
+    //Methods I'm attaching to the controller
+    $scope.loadListToEdit         = loadListToEdit;
+    vm.updateListCopy             = updateListCopy;
+    vm.toggleAddItemFormVisible   = toggleAddItemFormVisible;
+    vm.addItemFormHandler         = addItemFormHandler;
+    vm.resetNewItemInfo           = resetNewItemInfo;
+    vm.toggleEditListFormVisible  = toggleEditListFormVisible;
+    vm.editListFormHandler        = editListFormHandler;
+    vm.deleteListFormHandler      = deleteListFormHandler;
     
     
     
@@ -257,8 +261,9 @@ let app = angular.module('app', []);
     
     
     
-    
-    
+    //__________________________________________________________________
+    //EDIT LIST METHODS
+    //__________________________________________________________________
     function toggleEditListFormVisible() {
       if(vm.editListFormVisible){
         vm.editListFormVisible  = false;
@@ -278,17 +283,38 @@ let app = angular.module('app', []);
       $http.put('http://localhost:3000/lists/' + vm.result._id, postObj)
         .then(function(result) {
           vm.editListFormVisible = false;
-          $scope.loadListToEdit();
+          //TODO: figure out how to update thingy
         }, function(err) {
           $log.log('Error editing this list ', err);
+        });
+    }
+    function deleteListFormHandler(){
+      if(vm.deleteListButtonText === 'Click again to confirm list deletion.') {
+        deleteList();
+      } else {
+        confirmDeleteList();
+      }
+    }
+    function confirmDeleteList() {
+      vm.deleteListButtonText = 'Click again to confirm list deletion.';
+    }
+    function deleteList () {
+      vm.deleteListButtonText = 'Delete this list.';
+      $http.delete('http://localhost:3000/lists/' + vm.result._id)
+        .then(function(result) {
+          vm.editListFormVisible = false;
+          vm.addItemFormVisible = false;
+          $scope.back();
+        }, function(err) {
+          $log.log('Error deleting this list ', err);
         });
     }
     
     
     
-    
-    
-    
+    //__________________________________________________________________
+    //ADD ITEM METHODS
+    //__________________________________________________________________
     function toggleAddItemFormVisible() {
       if(vm.addItemFormVisible){
         vm.addItemFormVisible   = false;
@@ -315,39 +341,26 @@ let app = angular.module('app', []);
         .then(function(result) {
           $log.log(result.data);
           vm.addItemFormVisible = false;
-          $scope.loadListToEdit();
+          vm.addItemButtonText = 'Add an item to this list.';
+          vm.resetNewItemInfo();
+          //TODO: get it to add this item into thingy
         }, function(err) {
           $log.log('Error posting this item ', err);
         });
     }
-    
-    
-    
-    
-    
-    
-    
-    function deleteListFormHandler(){
-      if(vm.deleteListButtonText === 'Click again to confirm list deletion.') {
-        deleteList();
-      } else {
-        confirmDeleteList();
-      }
+    function resetNewItemInfo(){
+      vm.addItemName                = null;
+      vm.addItemDescription         = null;
+      vm.addItemDueDate             = null;
+      vm.addItemComplete            = false;
     }
-    function confirmDeleteList() {
-      vm.deleteListButtonText = 'Click again to confirm list deletion.';
-    }
-    function deleteList () {
-      vm.deleteListButtonText = 'Delete this list.';
-      $http.delete('http://localhost:3000/lists/' + vm.result._id)
-        .then(function(result) {
-          vm.editListFormVisible = false;
-          vm.addItemFormVisible = false;
-          $scope.back();
-        }, function(err) {
-          $log.log('Error deleting this list ', err);
-        });
-    }
+    
+    
+    
+    
+    
+    
+    
     
     
   }
@@ -359,9 +372,9 @@ let app = angular.module('app', []);
 
 
 
-
+//__________________________________________________________________
 //EDIT AN INDIVIDUAL ITEM
-//______________________________________________________________________________________________________________________________________________________________________ 
+//__________________________________________________________________ 
 (function() {
   app.directive('listItem', function(){
     return {
@@ -399,6 +412,10 @@ let app = angular.module('app', []);
     }
     
     
+    
+    //__________________________________________________________________
+    //EDIT ITEM METHODS
+    //__________________________________________________________________
     function toggleEditItemFormVisible() {
       if(vm.editItemFormVisible){
         vm.editItemFormVisible    = false;
@@ -412,13 +429,13 @@ let app = angular.module('app', []);
       let postObj = {};
       postObj.name = vm.itemCopy.name;
       if(vm.itemCopy.description) {
-        postObj.name = vm.itemCopy.description;
+        postObj.description = vm.itemCopy.description;
       }
       if(vm.itemCopy.dueDate) {
-        postObj.name = vm.itemCopy.dueDate;
+        postObj.dueDate = vm.itemCopy.dueDate;
       }
       if(vm.itemCopy.complete) {
-        postObj.name = vm.itemCopy.complete;
+        postObj.complete = vm.itemCopy.complete;
       }
 
       $http.put('http://localhost:3000/items/' + $scope.item._id, postObj)
@@ -426,17 +443,11 @@ let app = angular.module('app', []);
           vm.editItemFormVisible = false;
           $log.log(result.data);
           $scope.item = result.data;
-          vm.initialize();
+          //TODO: do stuff locally
         }, function(err) {
           $log.log('Error updating item: ', err);
         });
     }
-    
-    
-    
-    
-    
-    
     
     function deleteItemFormHandler() {
       if(vm.deleteItemButtonText === 'Click again to confirm item deletion.') {
@@ -453,7 +464,7 @@ let app = angular.module('app', []);
       $http.delete('http://localhost:3000/items/' + $scope.item._id)
         .then(function(result) {
           vm.editItemFormVisible = false;
-          $scope.initialize();
+          //TODO: do stuff locally not with api call
         }, function(err) {
           $log.log('Error deleting item: ', err);
         });
