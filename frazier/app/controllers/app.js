@@ -91,7 +91,6 @@ let app = angular.module('app', []);
     function initialize(cb){
       $http.get('http://localhost:3000/lists')
       .then((result) => {
-        vm.test = result.data;
         vm.lists = result.data;
         if(cb){
           cb(null, result.data);
@@ -215,9 +214,9 @@ let app = angular.module('app', []);
     vm.addItemFormVisible         = false;
     vm.editListFormVisible        = false;
     //Data that will come in from the API
-    vm.result                     = null;
-    vm.list                       = null;
-    vm.listCopy                   = null;
+    vm.result                     = {};
+    vm.list                       = [];
+    vm.listCopy                   = [];
     vm.editListError              = null;
     //Button text for buttons whose text will change 
     vm.addItemButtonText          = 'Add an item to this list.';
@@ -244,6 +243,7 @@ let app = angular.module('app', []);
     function loadListToEdit(){
       $http.get('http://localhost:3000/lists/' + $scope.listIdForEditSection)
       .then(function(result){
+        $log.log(result.data);
         vm.result = result.data;
         vm.list   = result.data.items;
         vm.updateListCopy();
@@ -252,7 +252,7 @@ let app = angular.module('app', []);
       });
     }
     function updateListCopy(){
-      self.listCopy = angular.copy(self.list);
+      vm.listCopy = angular.copy(vm.list);
     }
     
     
@@ -289,9 +289,10 @@ let app = angular.module('app', []);
         });
     }
     function updateListAfterPut(){
-      self.list.name = vm.listCopy.name;
+      $log.log(vm.result);
+      vm.result.name = vm.listCopy.name;
       if(vm.listCopy.description) {
-        self.list.description = vm.listCopy.description;
+        vm.result.description = vm.listCopy.description;
       }
       vm.updateListCopy();
     }
@@ -350,7 +351,7 @@ let app = angular.module('app', []);
           vm.addItemFormVisible = false;
           vm.addItemButtonText = 'Add an item to this list.';
           vm.resetNewItemInfo();
-          vm.loadListToEdit(); //can't be done locally with cacheing, because if they want to edit the item afterwards, we need to have the database id of the item
+          $scope.loadListToEdit(); //can't be done locally with cacheing, because if they want to edit the item afterwards, we need to have the database id of the item
         }, function(err) {
           $log.log('Error posting this item ', err);
         });
@@ -448,6 +449,7 @@ let app = angular.module('app', []);
 
       $http.put('http://localhost:3000/items/' + $scope.item._id, postObj)
         .then(function(result) {
+          vm.editItemButtonText = 'Edit or delete this item.';
           vm.editItemFormVisible = false;
           $log.log(result.data);
           $scope.item = result.data;
